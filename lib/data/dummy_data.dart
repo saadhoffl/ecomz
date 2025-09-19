@@ -1,25 +1,18 @@
 import 'models/product.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-final List<Product> dummyProducts = [
-  Product(
-    id: '1',
-    title: 'Nike Air Max 270',
-    description: 'Breathable and comfortable sneakers for daily wear.',
-    price: 129.99,
-    imageUrl: 'https://picsum.photos/seed/shoe1/400/400',
-  ),
-  Product(
-    id: '2',
-    title: 'Adidas Running Shoes',
-    description: 'Lightweight and durable running shoes.',
-    price: 99.99,
-    imageUrl: 'https://picsum.photos/seed/shoe2/400/400',
-  ),
-  Product(
-    id: '3',
-    title: 'Puma Sport Shoes',
-    description: 'Stylish and flexible sport shoes.',
-    price: 89.99,
-    imageUrl: 'https://picsum.photos/seed/shoe3/400/400',
-  ),
-];
+// Replace dummyProducts with API-based Future
+Future<List<Product>> dummyProducts() async {
+  const String baseUrl = "http://localhost:3000"; 
+  // ⚠️ Change to your machine IP when testing on device
+
+  final response = await http.get(Uri.parse("$baseUrl/products"));
+
+  if (response.statusCode == 200) {
+    final List<dynamic> data = json.decode(response.body);
+    return data.map((item) => Product.fromJson(item)).toList();
+  } else {
+    throw Exception("Failed to load products");
+  }
+}
