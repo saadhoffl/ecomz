@@ -4,8 +4,13 @@ import '../auth_service.dart';
 
 class AuthProvider with ChangeNotifier {
   bool _isLoggedIn = false;
-
+  String? userEmail;
   bool get isLoggedIn => _isLoggedIn;
+
+  void login(String email) {
+    userEmail = email;
+    notifyListeners();
+  }
 
   Future<void> checkLoginStatus() async {
     _isLoggedIn = await AuthService.isLoggedIn();
