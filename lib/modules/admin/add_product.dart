@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../providers/auth_provider.dart';
+
+const String tokenKey = "auth_token";
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -21,7 +24,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   bool isLoading = false;
 
-  final String baseUrl = "http://localhost:3000"; 
+  final String baseUrl = "http://localhost:3000/api/products"; 
 
   Future<void> addProduct() async {
     if (!_formKey.currentState!.validate()) return;
@@ -33,9 +36,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
     });
 
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString(tokenKey);
       final response = await http.post(
-        Uri.parse("$baseUrl/add_product"), // Replace with your Node API URL
-        headers: {'Content-Type': 'application/json'},
+        Uri.parse("$baseUrl/add"), // Replace with your Node API URL
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token', // 🔑 Send token here
+        },
         body: jsonEncode({
           "title": title,
           "description": description,

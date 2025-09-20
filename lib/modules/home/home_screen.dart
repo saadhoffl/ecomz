@@ -7,7 +7,7 @@ import '../../data/models/product.dart';
 import '../product/product_detail_screen.dart';
 import '../../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
-import '../../signin_screen.dart';
+import '../auth/signin_screen.dart';
 import '../account/account_screen.dart';
 
 class HomeScreen extends StatefulWidget {

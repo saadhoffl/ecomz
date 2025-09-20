@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  static const String baseUrl = "http://localhost:3000"; 
+  static const String baseUrl = "http://localhost:3000/api/auth"; 
   static const String tokenKey = "auth_token";
   // ⚠️ On real device/emulator: replace `localhost` with your PC IP, e.g. http://192.168.x.x:3000
 

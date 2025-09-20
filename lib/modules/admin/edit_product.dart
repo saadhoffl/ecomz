@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';           // Flutter widgets
 import 'dart:convert';                             // jsonEncode / jsonDecode
 import 'package:http/http.dart' as http;           // http requests
 import '../../data/models/product.dart'; 
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../providers/auth_provider.dart';
+
+const String tokenKey = "auth_token";
 
 class EditProductFormScreen extends StatefulWidget {
   final Product product;
@@ -26,7 +31,7 @@ class _EditProductFormScreenState extends State<EditProductFormScreen> {
 
   bool isLoading = false;
 
-  final String baseUrl = "http://localhost:3000"; 
+  final String baseUrl = "http://localhost:3000/api/products"; 
 
   @override
   void initState() {
@@ -44,9 +49,14 @@ class _EditProductFormScreenState extends State<EditProductFormScreen> {
     setState(() => isLoading = true);
 
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString(tokenKey);
       final response = await http.put(
-        Uri.parse("$baseUrl/edit_product/${widget.product.id}"),
-        headers: {'Content-Type': 'application/json'},
+        Uri.parse("$baseUrl/edit/${widget.product.id}"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token', // 🔑 Send token here
+        },
         body: jsonEncode({
           "title": title,
           "description": description,

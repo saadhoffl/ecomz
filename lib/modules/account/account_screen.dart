@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../shared/app_footer.dart';
 import '../../shared/app_header.dart';
-import '../../signin_screen.dart';
+import '../auth/signin_screen.dart';
 import '../admin/add_product.dart';
 import '../admin/view_edit_product.dart';
 import '../admin/view_delete_product.dart';

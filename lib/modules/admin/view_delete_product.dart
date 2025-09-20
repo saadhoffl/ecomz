@@ -6,6 +6,10 @@ import '../../data/product.dart'; // ProductService
 import '../../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
+const String tokenKey = "auth_token";
+
 class DeleteProductScreen extends StatefulWidget {
   const DeleteProductScreen({super.key});
 
@@ -16,7 +20,7 @@ class DeleteProductScreen extends StatefulWidget {
 class _DeleteProductScreenState extends State<DeleteProductScreen> {
   late Future<List<Product>> productsFuture;
 
-  final String baseUrl = "http://localhost:3000"; 
+  final String baseUrl = "http://localhost:3000/api/products"; 
 
   @override
   void initState() {
@@ -32,8 +36,14 @@ class _DeleteProductScreenState extends State<DeleteProductScreen> {
 
   Future<void> deleteProduct(String productId) async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString(tokenKey);
       final response = await http.delete(
-        Uri.parse("$baseUrl/delete_product/$productId"),
+        Uri.parse("$baseUrl/delete/$productId"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token', // 🔑 Send token here
+        },
       );
 
       final data = jsonDecode(response.body);
