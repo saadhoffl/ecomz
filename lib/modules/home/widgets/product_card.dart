@@ -29,6 +29,15 @@ class ProductCard extends StatelessWidget {
                   product.imageUrl,
                   fit: BoxFit.cover,
                   width: double.infinity,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Center(
+                      child: Icon(
+                        Icons.broken_image,
+                        size: 60,
+                        color: Colors.grey,
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
@@ -54,5 +63,6 @@ class ProductCard extends StatelessWidget {
         ),
       ),
     );
+
   }
 }
