@@ -64,10 +64,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
             itemCount: products.length,
             itemBuilder: (context, index) {
               final product = products[index];
+
               return ListTile(
-                leading: product.imageUrl != null
-                    ? Image.network(product.imageUrl!, width: 50, height: 50)
-                    : const Icon(Icons.image),
+                leading: (product.imageUrl != null && product.imageUrl!.isNotEmpty)
+                    ? Image.network(
+                        product.imageUrl!,
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.broken_image, size: 50);
+                        },
+                      )
+                    : const Icon(Icons.image, size: 50),
                 title: Text(product.title),
                 subtitle: Text("\$${product.price.toString()}"),
                 trailing: ElevatedButton(
@@ -77,6 +86,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
               );
             },
           );
+
         },
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../signin_screen.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../modules/home/home_screen.dart';
 
 class AppHeader extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -39,17 +40,25 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                 borderRadius: BorderRadius.circular(6),
               ),
             ),
-            onPressed: () {
-               if (isLoggedIn) {
-               authProvider.logout();
-              } else {
-                // 🔑 Navigate to signin screen
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SigninScreen()),
-                );
-              }
-            },
+           onPressed: () async {
+                if (isLoggedIn) {
+                  await authProvider.logout();
+
+                  // Navigate back to Home after logout
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => HomeScreen()),
+                    (route) => false, // remove all previous routes
+                  );
+                } else {
+                  // Navigate to signin screen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SigninScreen()),
+                  );
+                }
+              },
+
             child: Text(isLoggedIn ? 'Logout' : 'Sign In'),
           ),
         ),

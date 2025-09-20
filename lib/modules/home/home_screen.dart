@@ -20,29 +20,30 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int selectedIndex = 0;
 
-  void _onTabTapped(int index) {
+void _onTabTapped(int index) {
+  final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+  if (index == 1) {
+    if (authProvider.isLoggedIn) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const AccountScreen()),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const SigninScreen()),
+      );
+    }
+  } else if (index == 0) {
+    // Already on Home → just update selectedIndex
     setState(() {
       selectedIndex = index;
     });
-
-    if (index == 1) {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-
-      if (authProvider.isLoggedIn) {
-        // ✅ Logged in → Go to Account page
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const AccountScreen()),
-        );
-      } else {
-        // ❌ Not logged in → Go to SignIn page
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const SigninScreen()),
-        );
-      }
-    }
   }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
