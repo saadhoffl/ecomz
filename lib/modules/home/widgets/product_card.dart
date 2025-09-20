@@ -3,15 +3,18 @@ import 'package:flutter/material.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
+  final VoidCallback? onTap; // ✅ new parameter
 
-  const ProductCard({super.key, required this.product});
+  const ProductCard({
+    super.key,
+    required this.product,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        // TODO: Navigate to product detail screen
-      },
+      onTap: onTap, // ✅ use it here
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
@@ -40,7 +43,10 @@ class ProductCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  Text("\$${product.price}", style: const TextStyle(color: Colors.teal)),
+                  Text(
+                    "\$${product.price}",
+                    style: const TextStyle(color: Colors.teal),
+                  ),
                 ],
               ),
             )

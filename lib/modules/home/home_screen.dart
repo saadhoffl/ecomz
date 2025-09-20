@@ -1,11 +1,14 @@
-import 'package:ecomz/data/dummy_data.dart';
+import 'package:ecomz/data/product.dart';
 import 'package:ecomz/modules/home/widgets/product_card.dart';
 import 'package:ecomz/shared/app_footer.dart';
 import 'package:ecomz/shared/app_header.dart';
 import 'package:flutter/material.dart';
 import '../../data/models/product.dart';
+import '../../data/product.dart';
+import '../product/product_detail_screen.dart';
 import '../../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
+import '../../signin_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
@@ -26,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
+    final ProductService productService = ProductService();
 
     return Scaffold(
       appBar: AppHeader(
@@ -35,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Padding(
         padding: const EdgeInsets.all(12),
         child: FutureBuilder<List<Product>>(
-          future: dummyProducts(), // async call here ✅
+          future: productService.fetchProducts(), // async call here ✅
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -57,7 +61,29 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               itemBuilder: (context, index) {
                 final product = products[index];
-                return ProductCard(product: product);
+                return ProductCard(
+                  product: product,
+                  onTap: () {
+                    if (authProvider.isLoggedIn) {
+                      // ✅ Logged in → Go to Product Details
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ProductDetailScreen(product: product),
+                        ),
+                      );
+                    } else {
+                      // ❌ Not logged in → Go to SignIn page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const SigninScreen(),
+                        ),
+                      );
+                    }
+                  },
+                );
+
               },
             );
           },
