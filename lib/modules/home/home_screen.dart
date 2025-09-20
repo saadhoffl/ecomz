@@ -8,7 +8,7 @@ import '../product/product_detail_screen.dart';
 import '../../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import '../../signin_screen.dart';
-import '../account/account_screen.dart'; // ✅ Import your account page
+import '../account/account_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
@@ -19,36 +19,48 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int selectedIndex = 0;
+  late Future<List<Product>> _productsFuture;
+  final ProductService _productService = ProductService();
 
-void _onTabTapped(int index) {
-  final authProvider = Provider.of<AuthProvider>(context, listen: false);
-
-  if (index == 1) {
-    if (authProvider.isLoggedIn) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const AccountScreen()),
-      );
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const SigninScreen()),
-      );
-    }
-  } else if (index == 0) {
-    // Already on Home → just update selectedIndex
-    setState(() {
-      selectedIndex = index;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _productsFuture = _productService.fetchProducts();
   }
-}
 
+  void _onTabTapped(int index) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
+    if (index == 1) {
+      if (authProvider.isLoggedIn) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const AccountScreen()),
+        ).then((_) => _refreshProducts()); // Refresh after coming back
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const SigninScreen()),
+        ).then((_) => _refreshProducts());
+      }
+    } else if (index == 0) {
+      setState(() {
+        selectedIndex = index;
+        _refreshProducts(); // Refresh when tapping home tab
+      });
+    }
+  }
+
+  Future<void> _refreshProducts() async {
+    setState(() {
+      _productsFuture = _productService.fetchProducts();
+    });
+    await _productsFuture;
+  }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    final ProductService productService = ProductService();
 
     return Scaffold(
       appBar: AppHeader(
@@ -58,7 +70,7 @@ void _onTabTapped(int index) {
       body: Padding(
         padding: const EdgeInsets.all(12),
         child: FutureBuilder<List<Product>>(
-          future: productService.fetchProducts(),
+          future: _productsFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -70,37 +82,41 @@ void _onTabTapped(int index) {
 
             final products = snapshot.data!;
 
-            return GridView.builder(
-              itemCount: products.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 2 / 3,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
+            return RefreshIndicator(
+              onRefresh: _refreshProducts,
+              child: GridView.builder(
+                itemCount: products.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 2 / 3,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                ),
+                itemBuilder: (context, index) {
+                  final product = products[index];
+                  return ProductCard(
+                    product: product,
+                    onTap: () {
+                      if (authProvider.isLoggedIn) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                ProductDetailScreen(product: product),
+                          ),
+                        ).then((_) => _refreshProducts()); // Refresh after returning from product detail
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const SigninScreen(),
+                          ),
+                        ).then((_) => _refreshProducts());
+                      }
+                    },
+                  );
+                },
               ),
-              itemBuilder: (context, index) {
-                final product = products[index];
-                return ProductCard(
-                  product: product,
-                  onTap: () {
-                    if (authProvider.isLoggedIn) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ProductDetailScreen(product: product),
-                        ),
-                      );
-                    } else {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const SigninScreen(),
-                        ),
-                      );
-                    }
-                  },
-                );
-              },
             );
           },
         ),
