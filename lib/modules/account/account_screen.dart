@@ -6,6 +6,7 @@ import '../../shared/app_header.dart';
 import '../../signin_screen.dart';
 import '../admin/add_product.dart';
 import '../admin/view_edit_product.dart';
+import '../admin/view_delete_product.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -79,7 +80,10 @@ class _AccountScreenState extends State<AccountScreen> {
             const SizedBox(height: 12),
             ElevatedButton.icon(
               onPressed: () {
-                // TODO: Navigate to Delete Product screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const DeleteProductScreen()),
+                );
               },
               icon: const Icon(Icons.delete),
               label: const Text("Delete Product"),

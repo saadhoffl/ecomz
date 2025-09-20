@@ -19,6 +19,11 @@ class AuthProvider with ChangeNotifier {
 
   Future<String?> signin(String email, String password) async {
     final result = await AuthService.signin(email, password);
+    if (result == null) {
+      userEmail = email;          // <-- store email
+      _isLoggedIn = true;
+      notifyListeners();
+    }
     await checkLoginStatus();
     return result;
   }
