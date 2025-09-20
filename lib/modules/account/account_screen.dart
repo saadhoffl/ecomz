@@ -5,6 +5,7 @@ import '../../shared/app_footer.dart';
 import '../../shared/app_header.dart';
 import '../../signin_screen.dart';
 import '../admin/add_product.dart';
+import '../admin/view_edit_product.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -67,7 +68,10 @@ class _AccountScreenState extends State<AccountScreen> {
             const SizedBox(height: 12),
             ElevatedButton.icon(
               onPressed: () {
-                // TODO: Navigate to Edit Product screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => EditProductScreen()),
+                );
               },
               icon: const Icon(Icons.edit),
               label: const Text("Edit Product"),
